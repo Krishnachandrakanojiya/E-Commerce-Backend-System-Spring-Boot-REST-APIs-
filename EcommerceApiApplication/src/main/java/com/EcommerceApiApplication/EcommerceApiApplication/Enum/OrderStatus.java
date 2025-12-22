@@ -1,4 +1,9 @@
 package com.EcommerceApiApplication.EcommerceApiApplication.Enum;
 
-public class OrderStatus {
+public enum OrderStatus {
+    CREATED,
+    PLACED,
+    SHIPPED,
+    DELIVERED,
+    CANCELLED
 }
