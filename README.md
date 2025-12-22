@@ -205,6 +205,12 @@ Payment gateway integration
 
 Docker & Kubernetes deployment
 
+## 📘 API Documentation
+Swagger UI is integrated for API exploration.
+
+URL:
+http://localhost:8080/swagger-ui.html
+
 👨‍💻 Author
 
 Krishna Kanojiya
