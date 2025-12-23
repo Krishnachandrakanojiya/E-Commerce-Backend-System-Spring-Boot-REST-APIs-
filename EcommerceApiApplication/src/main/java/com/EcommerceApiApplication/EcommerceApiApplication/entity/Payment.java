@@ -1,5 +1,7 @@
 package com.EcommerceApiApplication.EcommerceApiApplication.entity;
 
+import com.EcommerceApiApplication.EcommerceApiApplication.Enum.PaymentStatus;
+import com.EcommerceApiApplication.EcommerceApiApplication.Enum.RefundStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +25,17 @@ public class Payment {
 
     private LocalDateTime paymentDate;
 
+    private Double amount;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @Enumerated(EnumType.STRING)
+    private RefundStatus refundStatus;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
     @OneToOne
     @JoinColumn(name = "order_id")
     private Order order;
@@ -31,16 +44,36 @@ public class Payment {
         return id;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public String getPaymentId() {
         return paymentId;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public LocalDateTime getPaymentDate() {
         return paymentDate;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public RefundStatus getRefundStatus() {
+        return refundStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public Order getOrder() {
@@ -63,8 +96,31 @@ public class Payment {
         this.paymentDate = paymentDate;
     }
 
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public void setRefundStatus(RefundStatus refundStatus) {
+        this.refundStatus = refundStatus;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public void setOrder(Order order) {
         this.order = order;
     }
+
+
+
 }
 

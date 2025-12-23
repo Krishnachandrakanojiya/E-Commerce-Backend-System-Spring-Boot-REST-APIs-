@@ -17,18 +17,18 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/{id}/addresses")
-    public Address addAddress(@PathVariable long id, @RequestBody Address address){
-        return userServiceImpl.addAddress(id , address);
+    public Address addAddress(@PathVariable long id, @RequestBody Address address) {
+        return userServiceImpl.addAddress(id, address);
     }
 
     @GetMapping("{id}/address")
-    public List<Address> getAddressByUserId(@PathVariable long id){
+    public List<Address> getAddressByUserId(@PathVariable long id) {
         return userServiceImpl.getAddress(id);
     }
 
     @PutMapping("/{id}/address")
-    public Address updateAddressByUsrId(@PathVariable long id, @RequestBody Address address){
-        return userServiceImpl.updateAddress(id,address);
+    public Address updateAddressByUsrId(@PathVariable long id, @RequestBody Address address) {
+        return userServiceImpl.updateAddress(id, address);
     }
 
 //    @DeleteMapping("{id}/DeleteAddress")
@@ -45,8 +45,8 @@ public class UserController {
 //    }
 
     @PutMapping("/update/{id}")
-    public UserDto updateUser(@PathVariable long id , @RequestBody UserDto userDto){
-        return userServiceImpl.updateUser(id,userDto);
+    public UserDto updateUser(@PathVariable long id, @RequestBody UserDto userDto) {
+        return userServiceImpl.updateUser(id, userDto);
     }
 
     @PostMapping("/addUser")
@@ -54,8 +54,8 @@ public class UserController {
         return userServiceImpl.registerUser(userDto);
     }
 
-    @GetMapping("/getUserId/{id}" )
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id){
+    @GetMapping("/getUserId/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         UserDto user = userServiceImpl.getUserById(id);
         return ResponseEntity.ok(user);
     }

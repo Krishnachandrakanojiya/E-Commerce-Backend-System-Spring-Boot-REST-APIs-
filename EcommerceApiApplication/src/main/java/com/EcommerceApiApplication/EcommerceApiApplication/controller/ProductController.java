@@ -1,7 +1,7 @@
 package com.EcommerceApiApplication.EcommerceApiApplication.controller;
 
 import com.EcommerceApiApplication.EcommerceApiApplication.DTO.ProductDto;
-import com.EcommerceApiApplication.EcommerceApiApplication.serviceimpl.productServiceImpl;
+import com.EcommerceApiApplication.EcommerceApiApplication.serviceimpl.ProductServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final productServiceImpl productServiceImpl;
+    private final ProductServiceImpl productServiceImpl;
 
-    public ProductController(productServiceImpl productServiceImpl) {
+    public ProductController(ProductServiceImpl productServiceImpl) {
         this.productServiceImpl = productServiceImpl;
     }
 

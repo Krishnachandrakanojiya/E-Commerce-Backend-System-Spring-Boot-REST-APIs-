@@ -12,6 +12,8 @@ import com.EcommerceApiApplication.EcommerceApiApplication.repository.CartReposi
 import com.EcommerceApiApplication.EcommerceApiApplication.repository.ProductRepository;
 import com.EcommerceApiApplication.EcommerceApiApplication.repository.UserRepository;
 import com.EcommerceApiApplication.EcommerceApiApplication.service.CartService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,11 +38,27 @@ public class CartServiceImpl implements CartService {
         this.productRepository = productRepository;
     }
 
+    private static final Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
+
+
+    @Override
+    public CartDto getCartByUserId(Long id) {
+        log.info("Fetching cart by userId={}", id);
+        Cart cart = getOrCreateCart(id);
+        return mapToDto(cart);
+    }
+
+
 
     @Override
     public CartDto updateItemQuantity(Long userId, Long productId, int quantity) {
 
+        log.info("Update cart item quantity. userId={}, productId={}, quantity={}",
+                userId, productId, quantity);
+
         if (quantity < 0) {
+            log.warn("Negative quantity attempted. userId={}, productId={}",
+                    userId, productId);
             throw new RuntimeException("Quantity cannot be negative");
         }
 
@@ -48,36 +66,56 @@ public class CartServiceImpl implements CartService {
 
         CartItem item = cartItemRepository
                 .findByCartIdAndProductId(cart.getId(), productId)
-                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
+                .orElseThrow(() -> {
+                    log.error("Cart item not found. cartId={}, productId={}",
+                            cart.getId(), productId);
+                    return new RuntimeException("Item not found in cart");
+                });
 
         if (quantity == 0) {
-            // remove item if quantity = 0
             cart.getItems().remove(item);
             cartItemRepository.delete(item);
+            log.info("Item removed from cart. productId={}", productId);
         } else {
             item.setQuantity(quantity);
+            log.debug("Cart item quantity updated. productId={}, quantity={}",
+                    productId, quantity);
         }
 
         recalculateTotal(cart);
         cartRepository.save(cart);
 
+        log.info("Cart updated successfully. cartId={}, totalPrice={}",
+                cart.getId(), cart.getTotalPrice());
+
         return mapToDto(cart);
     }
+
 
     // GET CART
 
     public CartDto getCart(Long userId) {
+
+        log.info("Fetching cart. userId={}", userId);
+
         Cart cart = getOrCreateCart(userId);
         return mapToDto(cart);
     }
+
     @Override
     public CartDto removeItemFromCart(Long id, Long productId) {
+
+        log.info("Remove item from cart. userId={}, productId={}", id, productId);
 
         Cart cart = getOrCreateCart(id);
 
         CartItem item = cartItemRepository
                 .findByCartIdAndProductId(cart.getId(), productId)
-                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
+                .orElseThrow(() -> {
+                    log.error("Cart item not found for removal. cartId={}, productId={}",
+                            cart.getId(), productId);
+                    return new RuntimeException("Item not found in cart");
+                });
 
         cart.getItems().remove(item);
         cartItemRepository.delete(item);
@@ -85,74 +123,95 @@ public class CartServiceImpl implements CartService {
         recalculateTotal(cart);
         cartRepository.save(cart);
 
+        log.info("Item removed successfully. cartId={}, productId={}, totalPrice={}",
+                cart.getId(), productId, cart.getTotalPrice());
+
         return mapToDto(cart);
     }
 
-    @Override
-    public CartDto getCartByUserId(Long id) {
-        return null;
-    }
+
 
 
     @Override
     public CartDto addItemToCart(Long id, Long productId, int quantity) {
 
+        log.info("Add item to cart. userId={}, productId={}, quantity={}",
+                id, productId, quantity);
+
         if (quantity <= 0) {
+            log.warn("Invalid quantity attempt. userId={}, productId={}, quantity={}",
+                    id, productId, quantity);
             throw new RuntimeException("Quantity must be greater than zero");
         }
 
-        // 1. Get or create cart
         Cart cart = getOrCreateCart(id);
 
-        // 2. Validate product
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> {
+                    log.error("Product not found while adding to cart. productId={}",
+                            productId);
+                    return new RuntimeException("Product not found");
+                });
 
-        // 3. Check if product already exists
         CartItem item = cartItemRepository
                 .findByCartIdAndProductId(cart.getId(), productId)
                 .orElse(null);
 
         if (item != null) {
-            // 4A. Increase quantity
             item.setQuantity(item.getQuantity() + quantity);
+            log.debug("Increased cart item quantity. productId={}, newQuantity={}",
+                    productId, item.getQuantity());
         } else {
-            // 4B. Create new item
             item = new CartItem();
             item.setCart(cart);
             item.setProduct(product);
             item.setPrice(product.getPrice());
             item.setQuantity(quantity);
-
             cart.getItems().add(item);
+
+            log.info("New item added to cart. productId={}, quantity={}",
+                    productId, quantity);
         }
 
-        // 5. Recalculate total
         recalculateTotal(cart);
-
-        // 6. Save
         cartRepository.save(cart);
 
-        // 7. Return response
+        log.info("Cart updated successfully. cartId={}, totalPrice={}",
+                cart.getId(), cart.getTotalPrice());
+
         return mapToDto(cart);
     }
+
 
 
     // =======================
     // PRIVATE HELPERS
     // =======================
     private Cart getOrCreateCart(Long id) {
+
         return cartRepository.findByUserId(id)
                 .orElseGet(() -> {
+                    log.info("No cart found. Creating new cart. userId={}", id);
+
                     User user = userRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("User not found"));
+                            .orElseThrow(() -> {
+                                log.error("User not found while creating cart. userId={}", id);
+                                return new RuntimeException("User not found");
+                            });
+
                     Cart cart = new Cart();
                     cart.setUser(user);
                     cart.setTotalPrice(0);
-                    cart.setItems(new ArrayList<>()); // empty list
-                    return cartRepository.save(cart);
+                    cart.setItems(new ArrayList<>());
+
+                    Cart savedCart = cartRepository.save(cart);
+                    log.info("New cart created. cartId={}, userId={}",
+                            savedCart.getId(), id);
+
+                    return savedCart;
                 });
     }
+
 
     private void recalculateTotal(Cart cart) {
         double total = cart.getItems().stream()

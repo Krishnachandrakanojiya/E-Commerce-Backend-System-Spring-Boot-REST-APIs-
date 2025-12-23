@@ -1,7 +1,9 @@
 package com.EcommerceApiApplication.EcommerceApiApplication.entity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.*;
 
 @Entity
@@ -13,6 +15,7 @@ public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cart_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -20,9 +23,11 @@ public class Cart {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL ,orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "items")
     private List<CartItem> items = new ArrayList<>();
 
+    @Column(name = "total_price")
     private double totalPrice;
 
 

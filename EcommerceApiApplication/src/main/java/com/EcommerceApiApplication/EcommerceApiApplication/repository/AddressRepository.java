@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
     List<Address> getAddressByUserId(Long id);
+
     void deleteAddressByUserId(Long userId);
 //
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cart")
-public class cartController {
+public class CartController {
 
     @Autowired
     private CartServiceImpl cartServiceImpl;
@@ -25,19 +25,15 @@ public class cartController {
 
     // UPDATE QUANTITY
     @PutMapping("/update")
-    public CartDto updateQuantity(
-            @RequestParam Long id,
-            @RequestParam Long productId,
-            @RequestParam int quantity) {
+    public CartDto updateQuantity(@RequestParam Long id, @RequestParam Long productId, @RequestParam int quantity) {
 
         return cartServiceImpl.updateItemQuantity(id, productId, quantity);
     }
 
+
     // REMOVE ITEM
     @DeleteMapping("/remove")
-    public CartDto removeItem(
-            @RequestParam Long id,
-            @RequestParam Long productId) {
+    public CartDto removeItem(@RequestParam Long id, @RequestParam Long productId) {
 
         return cartServiceImpl.removeItemFromCart(id, productId);
     }

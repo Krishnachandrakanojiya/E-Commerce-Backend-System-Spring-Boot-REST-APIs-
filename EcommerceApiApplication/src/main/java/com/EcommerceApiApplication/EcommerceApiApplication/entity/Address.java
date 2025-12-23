@@ -1,7 +1,9 @@
 package com.EcommerceApiApplication.EcommerceApiApplication.entity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.*;
 
 @Entity
@@ -15,11 +17,19 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "addressLine")
     private String addressLine;
 
+    @Column(name ="city")
     private String city;
+
+    @Column(name ="state")
     private String state;
+
+    @Column(name ="postalCode")
     private String postalCode;
+
+    @Column(name ="country")
     private String country;
 
 
